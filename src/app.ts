@@ -1,3 +1,39 @@
+//validation
+interface Validatable {
+  value: string | number;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+}
+
+function validate(input: Validatable) {
+  let isValid = true;
+  if (input.required) {
+    isValid = isValid && input.value.toString().trim().length !== 0;
+  }
+  if (input.minLength != null && typeof input.value === 'string') {
+    isValid = isValid && input.value.length > input.minLength;
+    console.log('input.minLength', isValid);
+  }
+  if (input.maxLength != null && typeof input.value === 'string') {
+    isValid = isValid && input.value.length < input.maxLength;
+    console.log('input.maxLength', isValid);
+  }
+  if (input.min != null) {
+    isValid = isValid && +input.value > +input.min;
+    console.log('input.min', isValid);
+  }
+  if (input.max != null) {
+    isValid = isValid && +input.value < +input.max;
+    console.log('input.max', isValid);
+  }
+  console.log('isvalid final', isValid);
+  return isValid;
+}
+
+//autobind decorator
 function autoBind(
   target: any,
   methodName: string,
@@ -51,12 +87,29 @@ class ProjectInput {
     const enteredTitle = this.titleInputElement.value;
     const enteredDescription = this.descriptionInputElement.value;
     const enteredPeople = this.peopleInputElement.value;
+
+    const titleValidatable: Validatable = {
+      value: enteredTitle,
+      required: true,
+    };
+
+    const descriptionValidatable: Validatable = {
+      value: enteredDescription,
+      required: true,
+      minLength: 5,
+    };
+
+    const peopleValidatable: Validatable = {
+      value: +enteredPeople,
+      required: true,
+      min: 1,
+      max: 5,
+    };
+
     if (
-      enteredTitle.trim().length === 0 ||
-      enteredDescription.trim().length === 0 ||
-      enteredPeople.trim().length === 0
+      !validate(titleValidatable) | !validate(descriptionValidatable) ||
+      !validate(peopleValidatable)
     ) {
-      console.log('something is empty');
       alert('invalid input, please try again');
     }
     return [enteredTitle, enteredDescription, +enteredPeople];
