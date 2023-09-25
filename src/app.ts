@@ -49,6 +49,40 @@ function autoBind(
   return adjDecroptor;
 }
 
+//
+class ProjectList {
+  templateElement: HTMLTemplateElement;
+  hostElemet: HTMLDivElement;
+  element: HTMLElement;
+
+  constructor(private type: 'active' | 'finished') {
+    this.templateElement = <HTMLTemplateElement>(
+      document.getElementById('project-list')!
+    );
+    this.hostElemet = document.getElementById('app')! as HTMLDivElement;
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    );
+    this.element = importedNode.firstElementChild as HTMLElement;
+    this.element.id = `${this.type}-projects`;
+    this.attach();
+    this.renderContent();
+  }
+
+  private renderContent() {
+    const listId = `${this.type}-project-list`;
+    this.element.querySelector('ul')!.id = listId;
+    this.element.querySelector('h2')!.textContent =
+      this.type.toLocaleUpperCase() + ' PROJECTS';
+  }
+
+  private attach() {
+    this.hostElemet.insertAdjacentElement('beforeend', this.element);
+  }
+}
+
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElemet: HTMLDivElement;
@@ -107,7 +141,8 @@ class ProjectInput {
     };
 
     if (
-      !validate(titleValidatable) | !validate(descriptionValidatable) ||
+      !validate(titleValidatable) ||
+      !validate(descriptionValidatable) ||
       !validate(peopleValidatable)
     ) {
       alert('invalid input, please try again');
@@ -139,3 +174,6 @@ class ProjectInput {
 }
 
 const prjInput = new ProjectInput();
+
+const activeProjectList = new ProjectList('active');
+const finishedProjectList = new ProjectList('finished');

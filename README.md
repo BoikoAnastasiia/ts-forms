@@ -1,1 +1,1 @@
-**tcs -w ** to run compiling
+**tsc -w ** to run compiling
